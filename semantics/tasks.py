@@ -128,13 +128,11 @@ def query_data(query_text):
     for result in results:
         for key in vars:
             d[key].append(result[key]['value'])
-    print(d)
 
     df = pd.DataFrame.from_dict(d)
     
     return df
     
-
 
 def clear_default_graph():
     #clearing default graph

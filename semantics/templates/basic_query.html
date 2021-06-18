@@ -1,0 +1,7 @@
+<a href="{% url 'home' %}">Advanced Query</a> | <a href="{% url 'basic_query' %}"  style="color:#FF0000;">Basic Query</a>
+<br></br>
+<form action="{% url 'basic_query' %}" method="POST">
+  {% csrf_token %}
+  <input name="search" type="text" name="name_field" placeholder="Search keywords">
+  <input type="submit" value="Search">
+</form>

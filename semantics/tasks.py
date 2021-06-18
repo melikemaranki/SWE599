@@ -12,14 +12,14 @@ local = "http://localhost"
 dataset_name = "MyData"
 
 
-HTTP_endpoint = local +':3030/' + dataset_name + '/data'
+""" HTTP_endpoint = local +':3030/' + dataset_name + '/data'
 Query_endpoint = local +':3030/'  + dataset_name + '/query' #or http://localhost:3030/MyDataset/sparql
-Update_endpoint =  local +':3030/'  + dataset_name + '/update'
+Update_endpoint =  local +':3030/'  + dataset_name + '/update' """
 
-""" HTTP_endpoint = host_address +':3030/' + dataset_name + '/data'
+HTTP_endpoint = host_address +':3030/' + dataset_name + '/data'
 Query_endpoint = host_address +':3030/'  + dataset_name + '/query' #or http://localhost:3030/MyDataset/sparql
 Update_endpoint =  host_address +':3030/'  + dataset_name + '/update'
- """
+
 
 def collect_data(q_text = 'covid', page_no = 1):
     parameters = {'q': q_text, 

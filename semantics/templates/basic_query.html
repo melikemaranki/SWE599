@@ -4,4 +4,9 @@
   {% csrf_token %}
   <input name="search" type="text" name="name_field" placeholder="Search keywords">
   <input type="submit" value="Search">
-</form>
+</form>  
+
+  {% if data %}
+  <textarea style="border:2px solid DodgerBlue;" name="Text1" bordercolor cols="80" rows="30">{{data}} </textarea>
+   {% endif %}
+  

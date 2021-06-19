@@ -24,13 +24,13 @@ def query(request):
 def basic_query(request):
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
-        text = request.POST['Text1'].strip()
+        text = request.POST['search'].strip()
         if not text:
             return
-        q_res = query_data(text)
+        q_res = basic_query_data(text)
         prev_query = text
 
   
-        return render(request, 'basic_query.html', {'data': q_res.to_html() ,'prev_query': prev_query})
+        return render(request, 'basic_query.html', {'data': q_res ,'prev_query': prev_query})
     else:
         return render(request, 'basic_query.html')

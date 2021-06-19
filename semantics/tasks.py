@@ -6,6 +6,9 @@ from rdflib.namespace import DCTERMS, FOAF, RDF
 import rdflib
 import pandas as pd
 from .confidential import my_api_key, host_address
+from summa import keywords
+from summa.summarizer import summarize
+from collections import defaultdict
 
 # ./fuseki-server --loc=/home/ubuntu/opt/fuseki/datasets --update /MyData
 local = "http://localhost"
@@ -23,7 +26,7 @@ Update_endpoint =  host_address +':3030/'  + dataset_name + '/update'
 
 def collect_data(q_text = 'covid', page_no = 1):
     parameters = {'q': q_text, 
-           'page-size': 10,
+           'page-size': 1,
            'page':page_no, 
            'show-fields': 'bodyText,headline,wordcount,shortUrl',
            'show-tags': 'contributor',
@@ -71,7 +74,16 @@ def build_graph(r):
             #pytz doesn't recognize UK code.
             if(code == 	'UK'):
                 code = 'GB'
-            country_name = pytz.country_names[code]
+            #https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
+            if(code == "XK"):
+                country_name = "Kosovo"
+            elif(code.strip() == "DO"):
+                country_name ="Dominican Republic"
+            else:
+                try:
+                    country_name = pytz.country_names[code]
+                except:
+                    country_name = "Other"
             country_names.append(country_name)
             g.add((article, DBO.country, Literal(country_name)))
 
@@ -92,10 +104,11 @@ def build_graph(r):
 
 def load_data():
     
-    r = collect_data(page_no=1)
-    max_page_no = r.json()['response']['pages']
-    i = 2
+    r = collect_data(page_no=34608)
+    max_page_no = r.json()['response']['total']
+    i = 34609
     while(i <= max_page_no):
+        print(i, ". page from total: ", max_page_no, " is being loaded.", sep="")
         data = build_graph(r)
     
         prefixes = "prefix dbo: <http://dbpedia.org/ontology/>\
@@ -122,7 +135,6 @@ def query_data(query_text):
     vars = response.json()['head']['vars']
     results = response.json()['results']['bindings']
    
-    from collections import defaultdict
     d = defaultdict(list)
    
     for result in results:
@@ -132,6 +144,33 @@ def query_data(query_text):
     df = pd.DataFrame.from_dict(d)
     
     return df
+
+def basic_query_data(query_text):
+    query = """prefix dbo: <http://dbpedia.org/ontology/>
+prefix dcterms: <http://purl.org/dc/terms/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix sioc: <http://rdfs.org/sioc/ns#>
+    
+SELECT ?article ?article_title ?article_text  WHERE { 
+      ?article sioc:title ?article_title  .
+      ?article sioc:topic ?article_section . 
+      ?article sioc:content ?article_text . 
+      FILTER regex(?article_text,""" +'"'+query_text+'"'+""", "i")
+    } 
+    LIMIT 5"""
+    response = requests.post(Query_endpoint,
+    data={'query':query})
+    results = response.json()['results']['bindings']
+   
+    result_text = ""
+    for result in results:
+        title = result['article_title']['value']
+        kws = keywords.keywords(result['article_text']['value'], words = 7)
+        url = result['article']['value']
+        abstract = summarize(result['article_text']['value'], words = 100)
+    
+        result_text += "title: " + title + "\n\nkeywords: " + " ".join(kws.splitlines()) + "\n\nurl: " + url + "\n\nabstract: " + abstract + "\n\n\n\n"
+    return result_text
     
 
 def clear_default_graph():

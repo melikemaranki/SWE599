@@ -147,30 +147,43 @@ def query_data(query_text):
 
 def basic_query_data(query_text):
     query = """prefix dbo: <http://dbpedia.org/ontology/>
-prefix dcterms: <http://purl.org/dc/terms/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-prefix sioc: <http://rdfs.org/sioc/ns#>
-    
-SELECT ?article ?article_title ?article_text  WHERE { 
+    prefix dcterms: <http://purl.org/dc/terms/>
+    prefix foaf: <http://xmlns.com/foaf/0.1/>
+    prefix sioc: <http://rdfs.org/sioc/ns#>
+        
+    SELECT ?article ?article_title ?article_text  WHERE { 
       ?article sioc:title ?article_title  .
       ?article sioc:topic ?article_section . 
       ?article sioc:content ?article_text . 
-      FILTER regex(?article_text,""" +'"'+query_text+'"'+""", "i")
+      FILTER regex(?article_title,""" +'"'+query_text+'"'+""", "i")
     } 
     LIMIT 5"""
     response = requests.post(Query_endpoint,
     data={'query':query})
     results = response.json()['results']['bindings']
    
-    result_text = ""
+    content = defaultdict(list)
     for result in results:
-        title = result['article_title']['value']
-        kws = keywords.keywords(result['article_text']['value'], words = 7)
-        url = result['article']['value']
-        abstract = summarize(result['article_text']['value'], words = 100)
-    
-        result_text += "title: " + title + "\n\nkeywords: " + " ".join(kws.splitlines()) + "\n\nurl: " + url + "\n\nabstract: " + abstract + "\n\n\n\n"
-    return result_text
+        content['title'].append(result['article_title']['value'])
+        content['url'].append(result['article']['value'])
+
+        # pip install textblob
+        from textblob import TextBlob, Word
+
+        
+
+        kws = keywords.keywords(result['article_text']['value'], words = 7).splitlines()
+        print(kws)
+        kws_lemma = []
+        for kw in kws:
+            kws_lemma.append(Word(kw).lemmatize())
+        content['kws'].append(set(kws_lemma))
+        content['abstract'].append(summarize(result['article_text']['value'], words = 100))
+      
+
+      
+    content = pd.DataFrame.from_dict(content)
+    return content
     
 
 def clear_default_graph():

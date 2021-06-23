@@ -1,4 +1,4 @@
-<a style="color:#FF0000;" href="{% url 'home' %}">Advanced Query</a> | <a href="{% url 'basic_query' %}">Basic Query</a>
+<a style="color:#FF0000;" href="{% url 'home' %}">SPARQL Query</a> | <a href="{% url 'basic_query' %}">Search Page</a>
  <pre>
   <b>Example Queries</b>
 
@@ -36,7 +36,6 @@
     <br/>
     <input type="submit" value="Execute">
   </form>
-
 
   {% block content %}
   {{data | safe}}

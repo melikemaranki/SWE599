@@ -1,12 +1,56 @@
-<a href="{% url 'home' %}">Advanced Query</a> | <a href="{% url 'basic_query' %}"  style="color:#FF0000;">Basic Query</a>
+<a href="{% url 'home' %}">SPARQL Query</a> | <a href="{% url 'basic_query' %}"  style="color:#FF0000;">Search Page</a>
 <br></br>
+
+
 <form action="{% url 'basic_query' %}" method="POST">
   {% csrf_token %}
   <input name="search" type="text" name="name_field" placeholder="Search keywords">
   <input type="submit" value="Search">
 </form>  
 
-  {% if data %}
-  <textarea style="border:2px solid DodgerBlue;" name="Text1" bordercolor cols="80" rows="30">{{data}} </textarea>
-   {% endif %}
-  
+
+
+{% if content.items %}
+<table class = "styled-table"> 
+  {% for index, row in content.iterrows %}
+  <tr>
+    <td>
+      <p><a href={{row.url}}>{{row.title}}</a></p>
+      <p>{{row.kws}}</p>
+      <p>{{row.abstract}}</p>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+
+<style>
+.styled-table {
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+</style>
+<p>source: https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l</p>

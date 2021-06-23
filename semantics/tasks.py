@@ -104,9 +104,9 @@ def build_graph(r):
 
 def load_data():
     
-    r = collect_data(page_no=34608)
+    r = collect_data(page_no=1)
     max_page_no = r.json()['response']['total']
-    i = 34609
+    i = 2
     while(i <= max_page_no):
         print(i, ". page from total: ", max_page_no, " is being loaded.", sep="")
         data = build_graph(r)

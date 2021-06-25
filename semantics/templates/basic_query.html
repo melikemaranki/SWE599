@@ -1,11 +1,19 @@
 <a href="{% url 'home' %}">SPARQL Query</a> | <a href="{% url 'basic_query' %}"  style="color:#FF0000;">Search Page</a>
-<br></br>
+<br><br>
 
 
 <form action="{% url 'basic_query' %}" method="POST">
   {% csrf_token %}
-  <input name="search" type="text" name="name_field" placeholder="Search keywords">
+  <input name="search" type="text" name="name_field" placeholder="Search article titles">
   <input type="submit" value="Search">
+  <br><br>
+  <label for="name">Country:</label>
+  <select name="id" id="id">
+    <option value="1">No Country is selected </option>
+    {% for item in q_res %}
+    <option value="{{ item.search_id }}">id: {{item.search_id }} - keyword: {{item.search_keyword}} -  date: {{item.query_datetime}}</option>
+    {% endfor %}
+  </select>
 </form>  
 
 

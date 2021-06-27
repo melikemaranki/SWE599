@@ -8,6 +8,9 @@
 	<input type="submit">
 	
 </form>
+<!--source: https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l-->
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'semantics/style.css' %}">
 
 {% if content.items %}
 <table class = "styled-table"> 
@@ -26,8 +29,6 @@
 {% endif %}
 </div>
 
-<!--source: https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l-->
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'semantics/style.css' %}">
+
 
 {% endblock %}

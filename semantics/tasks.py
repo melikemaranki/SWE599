@@ -163,7 +163,7 @@ def basic_query_data(keyword, country, search, section):
                            ?article sioc:content ?article_text . FILTER regex(?article_text,"%s", "i") } LIMIT 5 """ % keyword 
     else:
         search_filter = """?article sioc:title ?article_title  . FILTER regex(?article_title,"%s", "i")
-                           ?article sioc:content ?article_text . } LIMIT 10""" % keyword
+                           ?article sioc:content ?article_text . } LIMIT 5""" % keyword
 
     query = """prefix dbo: <http://dbpedia.org/ontology/>
     prefix dcterms: <http://purl.org/dc/terms/>

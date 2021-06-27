@@ -1,42 +1,33 @@
-<a style="color:#FF0000;" href="{% url 'home' %}">SPARQL Query</a> | <a href="{% url 'basic_query' %}">Search Page</a>
- <pre>
-  <b>Example Queries</b>
+{% extends "base.html" %}
+{% block content%}
+{% load bootstrap3 %}
 
-  <b>Example 1: Selecting first 25 triples</b>
+<form action="" method="post" class="form">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	<input type="submit">
+	
+</form>
 
-    SELECT ?subject ?predicate ?object 
-    WHERE {
-      ?subject ?predicate ?object
-    }
-    LIMIT 25
-  </pre>
-  <pre>
-  <b>Example 2: Selecting articles which includes Germany and Netherlands</b>
-
-    prefix dbo: &lt;http://dbpedia.org/ontology/&gt;
-    prefix dcterms: &lt;http://purl.org/dc/terms/&gt;
-    prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
-    prefix sioc: &lt;http://rdfs.org/sioc/ns#&gt;
-    
-    SELECT ?country1 ?country2 ?article ?article_title WHERE { 
-      ?article sioc:title ?article_title  .
-      ?article sioc:topic ?article_section . 
-      ?article sioc:content ?article_text . 
-      ?article dbo:country ?country1 . FILTER (?country1 = "Germany") 
-      ?article dbo:country ?country2 . FILTER (?country2 = "Netherlands") 
-    } 
-    LIMIT 100
-  </pre>
-
+{% if content.items %}
+<table class = "styled-table"> 
+  {% for index, row in content.iterrows %}
+  <tr>
+    <td>
+      <p><a href="{{row.url}}" , target="_blank">{{row.title}}</a></p>
+      {% for kw in row.kws%}
+      <div class="boxed">{{kw}}  </div>
+      {% endfor %}
+      <p>{{row.abstract|safe}}</p>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
 </div>
 
-   <form action="{% url 'query' %}" method="POST">
-    {% csrf_token %}
-    <textarea name="Text1" cols="80" rows="10" placeholder="Write a SPARQL query">{% if prev_query %}{{prev_query}}{% endif %}</textarea>
-    <br/>
-    <input type="submit" value="Execute">
-  </form>
+<!--source: https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l-->
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'semantics/style.css' %}">
 
-  {% block content %}
-  {{data | safe}}
-  {% endblock %}
+{% endblock %}

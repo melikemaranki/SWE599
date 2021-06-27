@@ -1,3 +1,4 @@
+from semantics.annotate import get_annotated_text
 import requests, pytz, json
 from geotext import GeoText
 from rdflib import Graph, Literal, URIRef
@@ -8,6 +9,7 @@ import pandas as pd
 from .confidential import my_api_key, host_address
 from summa import keywords
 from summa.summarizer import summarize
+from textblob import Word
 from collections import defaultdict
 
 # ./fuseki-server --loc=/home/ubuntu/opt/fuseki/datasets --update /MyData
@@ -145,19 +147,35 @@ def query_data(query_text):
     
     return df
 
-def basic_query_data(query_text):
+def basic_query_data(keyword, country, search, section):
+    if country:
+        country_filter = '?article dbo:country ?country . FILTER ( ?country = "%s" )' % country
+    else:
+        country_filter = ""
+
+    if section:
+        section_filter = '?article sioc:topic ?article_section . FILTER ( ?article_section = "%s" )' % section
+    else:
+        section_filter = ""
+    
+    if search == "article text":
+        search_filter = """?article sioc:title ?article_title  . 
+                           ?article sioc:content ?article_text . FILTER regex(?article_text,"%s", "i") } LIMIT 5 """ % keyword 
+    else:
+        search_filter = """?article sioc:title ?article_title  . FILTER regex(?article_title,"%s", "i")
+                           ?article sioc:content ?article_text . } LIMIT 10""" % keyword
+
     query = """prefix dbo: <http://dbpedia.org/ontology/>
     prefix dcterms: <http://purl.org/dc/terms/>
     prefix foaf: <http://xmlns.com/foaf/0.1/>
     prefix sioc: <http://rdfs.org/sioc/ns#>
         
     SELECT ?article ?article_title ?article_text  WHERE { 
-      ?article sioc:title ?article_title  .
-      ?article sioc:topic ?article_section . 
-      ?article sioc:content ?article_text . 
-      FILTER regex(?article_title,""" +'"'+query_text+'"'+""", "i")
-    } 
-    LIMIT 5"""
+      %s
+      %s
+      %s
+    """ % (section_filter, country_filter, search_filter,)
+    print(query)
     response = requests.post(Query_endpoint,
     data={'query':query})
     results = response.json()['results']['bindings']
@@ -167,18 +185,14 @@ def basic_query_data(query_text):
         content['title'].append(result['article_title']['value'])
         content['url'].append(result['article']['value'])
 
-        # pip install textblob
-        from textblob import TextBlob, Word
-
-        
-
         kws = keywords.keywords(result['article_text']['value'], words = 7).splitlines()
-        print(kws)
+       
         kws_lemma = []
         for kw in kws:
             kws_lemma.append(Word(kw).lemmatize())
         content['kws'].append(set(kws_lemma))
-        content['abstract'].append(summarize(result['article_text']['value'], words = 100))
+        abstract = summarize(result['article_text']['value'], words = 100)
+        content['abstract'].append(get_annotated_text(abstract))
       
 
       
@@ -189,3 +203,37 @@ def basic_query_data(query_text):
 def clear_default_graph():
     #clearing default graph
     requests.post(Update_endpoint, data={'update':"CLEAR DEFAULT"})
+
+def get_country_names():
+    query = """prefix dbo: <http://dbpedia.org/ontology/>
+       
+    SELECT DISTINCT ?country WHERE { 
+      ?article dbo:country ?country  .
+    } """
+    response = requests.post(Query_endpoint,
+    data={'query':query})
+    results = response.json()['results']['bindings']
+   
+    country_list = []
+    for result in results:
+        country_name =result['country']['value']
+        country_list.append((country_name,country_name))
+
+    return sorted(country_list)
+
+def get_section_names():
+    query = """prefix sioc: <http://rdfs.org/sioc/ns#>
+       
+    SELECT DISTINCT ?section WHERE { 
+      ?article sioc:topic ?section . 
+    } """
+    response = requests.post(Query_endpoint,
+    data={'query':query})
+    results = response.json()['results']['bindings']
+   
+    section_list = []
+    for result in results:
+        section_name =result['section']['value']
+        section_list.append((section_name,section_name))
+
+    return sorted(section_list)

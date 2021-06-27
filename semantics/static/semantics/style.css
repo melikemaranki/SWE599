@@ -1,0 +1,61 @@
+    .form{
+    max-width: max-content
+    }
+    .boxed {
+    background-color:#bfd3ce;
+    padding: 0px 14px;
+    line-height: 29px;
+    margin: 0px 10px 14px 0px;
+    border-bottom: solid 1px #969696;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #111111;
+    max-width: max-content;
+  }
+  .styled-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .styled-table th,
+  .styled-table td {
+      padding: 12px 15px;
+  }
+  
+  .styled-table tbody tr {
+      border-bottom: 1px solid #dddddd;
+  }
+  
+  .styled-table tbody tr:nth-of-type(even) {
+      background-color: #f3f3f3;
+  }
+  
+  .styled-table tbody tr:last-of-type {
+      border-bottom: 2px solid #009879;
+  }
+  
+  /* width */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  

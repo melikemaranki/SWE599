@@ -1,0 +1,33 @@
+
+<!-- https://blog.getbootstrap.com/2016/07/25/bootstrap-3-3-7-released/ -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<div class="main">
+<a href="{% url 'home' %}">Home</a> | <a href="{% url 'sparql' %}">SPARQL Query</a>
+<hr> 
+<p>Learn more about <b>Covid-19</b> by searching articles from <a href="https://open-platform.theguardian.com">the Guardian</a>. There are currently <b>29,147</b> articles available in our database.</p>
+<p>This site has been developed as a graduation project (SWE599) for Boğaziçi University Software Engineering masters program.</p>
+<br><br/>
+{% block content %}
+{% endblock %}
+</div>
+
+<style>
+.main {
+
+    margin: 0;
+    padding-left: 30px;
+    padding-top: 5px;
+    float: left;
+    min-height: 500px;
+    height: 100%;
+    width: 80%;
+    }
+    
+</style>

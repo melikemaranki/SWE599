@@ -1,60 +1,15 @@
-import requests, pytz, json
-from geotext import GeoText
-from rdflib import Graph, Literal, URIRef
-from rdflib import URIRef, Literal, Graph
-from rdflib.namespace import DCTERMS, FOAF, RDF
-import rdflib
-import pandas as pd
-from semantics.confidential import my_api_key, host_address
-from summa import keywords
-from summa.summarizer import summarize
-from collections import defaultdict
+import tagme
+from semantics.confidential import tagme_token
 
-# ./fuseki-server --loc=/home/ubuntu/opt/fuseki/datasets --update /MyData
-local = "http://localhost"
-dataset_name = "MyData"
+tagme.GCUBE_TOKEN = tagme_token
 
+def run():
+    text = "At the beginning of March, thousands of refugees gathered in the shadow of the Pazarkule border gate in Turkey after President Recep Tayyip Erdoğan said he would “open the gate” to Europe. They had no choice but to go, she says: “[Turkish forces] threatened us with weapons.” Rima says that there was minimal food provision and medical care in Malatya. “Thousands of people were flooded to the border as a political leverage or blackmailing material,” he says. “My friend is still suffering from injuries on his hand.” Ibrahim says he has spent about $1,700 (£1,380) and exhausted nearly all his finances on the attempt to cross the border into Europe."
+    annotations = tagme.annotate(text)
 
-""" HTTP_endpoint = local +':3030/' + dataset_name + '/data'
-Query_endpoint = local +':3030/'  + dataset_name + '/query' #or http://localhost:3030/MyDataset/sparql
-Update_endpoint =  local +':3030/'  + dataset_name + '/update' """
-
-HTTP_endpoint = host_address +':3030/' + dataset_name + '/data'
-Query_endpoint = host_address +':3030/'  + dataset_name + '/query' #or http://localhost:3030/MyDataset/sparql
-Update_endpoint =  host_address +':3030/'  + dataset_name + '/update'
-
-def run(query_text = "germany"):
-    query = """prefix dbo: <http://dbpedia.org/ontology/>
-    prefix dcterms: <http://purl.org/dc/terms/>
-    prefix foaf: <http://xmlns.com/foaf/0.1/>
-    prefix sioc: <http://rdfs.org/sioc/ns#>
-        
-    SELECT ?article ?article_title ?article_text  WHERE { 
-      ?article sioc:title ?article_title  .
-      ?article sioc:topic ?article_section . 
-      ?article sioc:content ?article_text . 
-      FILTER regex(?article_title,""" +'"'+query_text+'"'+""", "i")
-    } 
-    LIMIT 5"""
-    response = requests.post(Query_endpoint,
-    data={'query':query})
-    results = response.json()['results']['bindings']
+    # Print annotations with a score higher than 0.1
+    for ann in annotations.get_annotations(0.1):
+        link_prep = "<a href=" + ann.uri() + ',target="_blank">' + ann.mention + "</a>"
+        text = text.replace(ann.mention,link_prep)
    
-    content = defaultdict(list)
-    for result in results:
-        content['title'].append(result['article_title']['value'])
-        content['url'].append(result['article']['value'])
-        content['kws'].append(keywords.keywords(result['article_text']['value'], words = 7))
-        content['abstract'].append(summarize(result['article_text']['value'], words = 100))
-      
-
-      
-    contents = pd.DataFrame.from_dict(content)
-    for index, row in contents.iterrows():
-      print(row['title'])
-    print(contents)
-    
-        #result_text += "title: " + title + "\n\nkeywords: " + " ".join(kws.splitlines()) + "\n\nurl: " + url + "\n\nabstract: " + abstract + "\n\n\n\n"
-    #print(result_text)
-    #print(contents)
-    return content
+    return text

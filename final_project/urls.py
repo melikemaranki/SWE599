@@ -21,8 +21,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', views.home, name = 'home'),
-    path('query/', views.query, name = 'query'),
-    path('basic_query/', views.basic_query, name = 'basic_query'),
+    path('sparql/', views.sparql, name = 'sparql'),
     #setting opening page path
-    path('', RedirectView.as_view(url='home/', permanent=True))
+    #path('', RedirectView.as_view(url='basic_query/', permanent=True))
 ]

@@ -1,1 +1,3 @@
 *.pyc
+semantics/confidential.py
+final_project/settings.py

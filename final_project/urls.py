@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from semantics import views
 from django.views.generic import RedirectView
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,3 +26,4 @@ urlpatterns = [
     #setting opening page path
     path('', RedirectView.as_view(url='home/', permanent=True))
 ]
+urlpatterns += staticfiles_urlpatterns()

@@ -23,5 +23,5 @@ urlpatterns = [
     path('home/', views.home, name = 'home'),
     path('sparql/', views.sparql, name = 'sparql'),
     #setting opening page path
-    #path('', RedirectView.as_view(url='basic_query/', permanent=True))
+    path('', RedirectView.as_view(url='home/', permanent=True))
 ]
